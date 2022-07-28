@@ -3,7 +3,7 @@ require("dotenv").config();
 const http = require("http");
 const server = http.createServer((request, response) => {
   const _url = request.url;
-  const fullUrl = new URL("http://localhost:3000" + _url);
+  const fullUrl = new URL("http://127.0.0.1:3000" + _url);
   const pathName = fullUrl.pathname;
   
   if (pathName === "/") {
