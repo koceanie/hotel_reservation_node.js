@@ -26,7 +26,6 @@ WORKDIR /source
 COPY package*.json ./
 RUN npm install
 RUN npm install -g nodemon
-CMD [ "nodemon", "-L", "app.js"]
 
 # Docker Demon Port Mapping
 EXPOSE 3000

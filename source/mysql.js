@@ -10,7 +10,7 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
-connection.query('SELECT * FROM member_table', function(err, results, fields) {
+connection.query('select title, content from posts where user_id = 1;', function(err, results, fields) {
   if (err) {
     console.log(err);
   }
