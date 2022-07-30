@@ -19,11 +19,10 @@ services:
 
   node:
     build:
-      context: ./server
+      context: .
       dockerfile: ./server/Dockerfile
     container_name: node
-    environment:
-      - NODE_ENV=development
+
     ports:
       - "3000:3000"
     expose:
@@ -31,12 +30,15 @@ services:
     volumes:
       - ./source:/source
       - /source/node_modules
+    environment:
+      - NODE_ENV=development
     networks:
       - default
     restart: "unless-stopped"
 
 networks:
   default:
-    external: true
-    name: nodejs-1
+    external:
+      name: nodejs
+
 
