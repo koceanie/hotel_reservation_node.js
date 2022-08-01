@@ -24,10 +24,11 @@ WORKDIR /source
 
 # Only copy the package.json file to work directory
 COPY package*.json ./
-RUN npm install --slient
+RUN npm install
+RUN npm install -g nodemon
 COPY . .
 
-CMD [ "node", "app.js" ]
+CMD ["nodemon", "app.js"]
 
 # Docker Demon Port Mapping
 EXPOSE 3000
