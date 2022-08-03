@@ -1,25 +1,67 @@
-//controller/userController.js
+const bookService = require("../services/bookService");
 
-const bookService = require('../services/bookService');
+const queryBook = async (req, res) => {
+  let data = {
+    boolean: false,
+    message: '',
+    code: Number(''),
+    result: null,
+  };
 
-const add = async (req, res) => {
   try {
-    const { title, description, cover_image } = req.body;
+    const rows = await bookService.queryBook();
+    data.result = rows;
+    data.code = 200;
+    
+  } catch (err) {
+    console.log(err);
+    data.code = err.statusCode
+    data.result = err.message;
+  }
+  return res.status(data.code).json(data.result);
+}
 
-    if ( !title || !description) {
-      return res.status(400).json({ message: 'KEY_ERROR' });
+const createNewBook = async (req, res) => {
+  try {
+    const {title, description, cover_image} = req.body;
+
+    if (!title || !description || !cover_image) {
+      return res.status(400).json({ message: "KEY_ERROR"});
     }
 
-    await bookService.add( name, email, password, profileImage );
+    await bookService.createNewBook(title, description, cover_image);
     return res.status(201).json({
-      message: 'SIGNUP_SUCCESS',
+      message : "SUCCESS : CREATE_NEW_BOOK"
     });
   } catch (err) {
     console.log(err);
-    return res.status(err.statusCode || 500).json({ message: err.message });
+    return res.status(err.statusCode || 500).json({
+      message : err.message
+    });
+  }
+};
+
+const updateBook = async (req, res) => {
+  try {
+    const {title, description, cover_image} = req.body;
+
+    if (!title || !description || !cover_image) {
+      return res.status(400).json({ message: "KEY_ERROR"});
+    }
+
+    await bookService.createNewBook(title, description, cover_image);
+    return res.status(201).json({
+      message : "SUCCESS : CREATE_NEW_BOOK"
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(err.statusCode || 500).json({
+      message : err.message
+    });
   }
 };
 
 module.exports = {
-	search
-}
+  queryBook,
+  createNewBook
+};

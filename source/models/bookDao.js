@@ -1,37 +1,51 @@
-//models/userDao.js
+const mysql = require("mysql2/promise");
 
-const { DataSource } = require('typeorm');
+const pool = mysql.createPool({
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	database: process.env.DB_DATABASE,
+	password: process.env.DB_PASSWORD,
+	waitForConnections: true,
+	connectionLimit: 300,
+	queueLimit: 0,
+	multipleStatements: true,
+});
 
-const myDataSource = new DataSource({
-	type: process.env.TYPEORM_CONNECTION,
-    host: process.env.TYPEORM_HOST,
-    port: process.env.TYPEORM_PORT,
-    username: process.env.TYPEORM_USERNAME,
-    password: process.env.TYPEORM_PASSWORD,
-    database: process.env.TYPEORM_DATABASE
-})
+const queryBook = async () => {
+  let data = {
+	boolean: false,
+	message: '',
+	code: Number(''),
+	result: null
+  };
 
-myDataSource.initialize()
-  .then(() => {
-    console.log("Data Source has been initialized!");
-  })
-  .catch((err) => {
-    console.error("Error occurred during Data Source initialization", err);
-	  myDataSource.destroy();
-  });
+  try {
+	const connection = await pool.getConnection(async conn => conn);
+    const [rows] = await connection.query(
+      `SELECT * FROM books
+		`);
 
-const createUser = async ( name, email, password, profileImage ) => {
+	connection.release();
+	data.result = rows;
+
+  } catch (err) {
+	console.log(err);
+	data.result = err.message
+  }
+  return data.result;
+};
+
+const createNewBook = async (title, description, cover_image) => {
 	try {
-		return await myDataSource.query(
-		`INSERT INTO users(
-			name,
-			email,
-			password
-			profile_image,
-		) VALUES (?, ?, ?, ?);
-		`,
-		[ name, email, password, profileImage ]
-	  );
+		return await pool.execute(
+			`INSERT INTO books (
+				title,
+				description,
+				cover_image
+				) VALUES (?, ?, ?);
+				`, [title, description, cover_image]
+		);
+	
 	} catch (err) {
 		const error = new Error('INVALID_DATA_INPUT');
 		error.statusCode = 500;
@@ -39,6 +53,34 @@ const createUser = async ( name, email, password, profileImage ) => {
 	}
 };
 
+const updateBook = async (name, data, id) => {
+	let data = {
+	  boolean: false,
+	  message: '',
+	  code: Number(''),
+	  result: null
+	};
+  
+	try {
+	  const connection = await pool.getConnection(async conn => conn);
+	  const [rows] = await connection.query(
+		`UPDATE books 
+			SET ?=?
+			WHERE id = ? 
+		  `,[name, data, id]);
+  
+	  connection.release();
+	  data.result = rows;
+  
+	} catch (err) {
+	  console.log(err);
+	  data.result = err.message
+	}
+	return data.result;
+  };
+
+
 module.exports = {
-  createUser
-}
+  queryBook,
+  createNewBook
+};
