@@ -14,7 +14,26 @@ const createNewBook = async (title, description, cover_image) => {
   return createBook;
 };
 
+const updateBook = async (id, title, description, cover_image) => {
+  const updateBook  = await bookDao.updateBook(
+    id,
+    title, 
+    description, 
+    cover_image
+  );
+  return updateBook;
+};
+
+const deleteBook = async (id) => {
+  const deleteBook  = await bookDao.deleteBook(
+    id
+  );
+  return deleteBook;
+};
+
 module.exports = {
   queryBook,
-  createNewBook
+  createNewBook,
+  updateBook,
+  deleteBook
 };

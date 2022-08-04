@@ -41,17 +41,34 @@ const createNewBook = async (req, res) => {
   }
 };
 
+
 const updateBook = async (req, res) => {
   try {
-    const {title, description, cover_image} = req.body;
+    const {id, title, description, cover_image} = req.body;
 
-    if (!title || !description || !cover_image) {
+    await bookService.updateBook(id, title, description, cover_image);
+    return res.status(201).json({
+      message : "SUCCESS : UPDATE_BOOK"
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(err.statusCode || 500).json({
+      message : err.message
+    });
+  }
+};
+
+const deleteBook = async (req, res) => {
+  try {
+    const {id} = req.body;
+
+    if (!id) {
       return res.status(400).json({ message: "KEY_ERROR"});
     }
 
-    await bookService.createNewBook(title, description, cover_image);
+    await bookService.deleteBook(id);
     return res.status(201).json({
-      message : "SUCCESS : CREATE_NEW_BOOK"
+      message : "SUCCESS : DELETE_BOOK"
     });
   } catch (err) {
     console.log(err);
@@ -63,5 +80,7 @@ const updateBook = async (req, res) => {
 
 module.exports = {
   queryBook,
-  createNewBook
+  createNewBook,
+  updateBook,
+  deleteBook
 };

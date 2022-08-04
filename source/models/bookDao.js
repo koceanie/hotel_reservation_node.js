@@ -53,8 +53,8 @@ const createNewBook = async (title, description, cover_image) => {
 	}
 };
 
-const updateBook = async (name, data, id) => {
-	let data = {
+const updateBook = async (id, title, description, cover_image) => {
+	let update = {
 	  boolean: false,
 	  message: '',
 	  code: Number(''),
@@ -63,24 +63,64 @@ const updateBook = async (name, data, id) => {
   
 	try {
 	  const connection = await pool.getConnection(async conn => conn);
+		
+	  const array = [];
+
+	  if (title) {
+		array.push(`title = "${title}"`)
+	  }
+
+	  if (description) {
+		array.push(`description = "${description}"`)
+	  }
+
+	  if (cover_image) {
+		array.push(`cover_image = "${cover_image}"`)
+	  }
+
 	  const [rows] = await connection.query(
 		`UPDATE books 
-			SET ?=?
-			WHERE id = ? 
-		  `,[name, data, id]);
-  
+			SET ${array}
+		  WHERE id = ${id}`
+	  )
+	  console.log(`UPDATE books SET ${array} WHERE id = ${id}`)
 	  connection.release();
-	  data.result = rows;
+	  update.result = rows;
   
 	} catch (err) {
 	  console.log(err);
-	  data.result = err.message
+	  update.result = err.message
 	}
-	return data.result;
+	return update.result;
   };
 
+const deleteBook = async (id) => {
+	let deletedata = {
+		boolean: false,
+		message: '',
+		code: Number(''),
+		result: null
+	};
+	try {
+		const connection1 = await pool.getConnection(async conn => conn);
+		const [rows] = await connection1.query(
+		`DELETE 
+		FROM books 
+		WHERE id = ${id}`)
+
+		connection1.release();
+		deletedata.result = rows;
+
+	} catch (err) {
+		console.log(err);
+		deletedata.result = err.message
+	}
+	return deletedata.result;
+	};
 
 module.exports = {
   queryBook,
-  createNewBook
+  createNewBook,
+  updateBook,
+  deleteBook
 };

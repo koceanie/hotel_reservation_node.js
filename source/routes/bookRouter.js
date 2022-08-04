@@ -7,8 +7,8 @@ const router = express.Router();
 // book 라우터 
 router.post('/query', bookController.createNewBook);
 router.get('/query', bookController.queryBook);
-router.update('/query', bookController.queryBook);
-router.delete('/query', bookController.queryBook);
+router.patch('/query', bookController.updateBook);
+router.delete('/query', bookController.deleteBook);
 
 module.exports = {
 	router
